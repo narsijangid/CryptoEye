@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Crypto Prices</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f5f5f5;
+      color: #222;
+      overflow-x: hidden;
+    }
+
+    header {
+      background: #111;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    header h1 {
+      cursor: pointer;
+    }
+
+    .menu-btn {
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .coin-list {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .coin {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .skeleton {
+      padding: 1rem;
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .skeleton-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .skeleton-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(90deg, #eeeeee 25%, #dddddd 50%, #eeeeee 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite linear;
+    }
+
+    .skeleton-line {
+      height: 14px;
+      border-radius: 6px;
+      background: linear-gradient(90deg, #eeeeee 25%, #dddddd 50%, #eeeeee 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite linear;
+    }
+
+    .skeleton-title { width: 120px; }
+    .skeleton-subtitle { width: 80px; margin-top: 5px; }
+
+    .skeleton-price, .skeleton-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .skeleton-price .skeleton-line, .skeleton-meta .skeleton-line {
+      width: 45%;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    .coin-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .coin-header img {
+      width: 40px;
+      height: 40px;
+    }
+
+    .coin-price {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 0.5rem;
+      font-weight: bold;
+    }
+
+    .coin-detail {
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      color: #666;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .green { color: green; }
+    .red { color: red; }
+
+    footer {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 1rem;
+      background: #fff;
+      position: sticky;
+      bottom: 0;
+      border-top: 1px solid #ddd;
+    }
+
+    button {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 5px;
+      background: #111;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+    }
+
+    @media (min-width: 600px) {
+      .coin-list { max-width: 500px; margin: auto; }
+    }
+
+    .sidebar {
+      position: fixed;
+      right: -300px;
+      top: 0;
+      width: 300px;
+      height: 100%;
+      background: #fff;
+      box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+      transition: right 0.3s ease;
+      z-index: 1000;
+      padding: 1rem;
+      border-top-left-radius: 15px;
+      border-bottom-left-radius: 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .sidebar.open {
+      right: 0;
+    }
+
+    .sidebar button {
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+
+    .sidebar-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .sidebar-links a {
+      text-align: center;
+      color: #111;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 0.5rem;
+      background: #f0f0f0;
+      border-radius: 5px;
+    }
+
+    #chartContainer {
+      max-width: 100%;
+      margin: 2rem auto;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 onclick="goHome()">CryptoEye </h1>
+    <div class="menu-btn" onclick="toggleSidebar()">⋮</div>
+  </header>
+
+  <!-- Sidebar -->
+  <div id="sidebar" class="sidebar">
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3>Menu</h3>
+        <span onclick="toggleSidebar()" style="font-size: 24px; cursor: pointer;">&times;</span>
+      </div>
+      <button onclick="showChart()">Live Candle Chart</button>
+    </div>
+    <div class="sidebar-links">
+      <a href="https://cryptoeyeapp.blogspot.com/2025/07/privacy-policy.html">Privacy Policy</a>
+      <a href="https://cryptoeyeapp.blogspot.com/2025/07/terms-and-conditions.html">Terms and Conditions
+</a>
+  <a href="https://cryptoeyeapp.blogspot.com/2025/07/about-us.html">About Us
+</a>
+    </div>
+  </div>
+
+  <!-- Chart Section -->
+  <div id="chartContainer">
+    <div class="tradingview-widget-container">
+      <div id="tradingview_chart"></div>
+    </div>
+  </div>
+
+  <div id="coin-list" class="coin-list"></div>
+
+  <footer>
+    <button id="prev">Previous</button>
+    <span id="page">Page 1</span>
+    <button id="next">Next</button>
+  </footer>
+
+  <!-- TradingView Script -->
+  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+
+  <script>
+    const list = document.getElementById('coin-list');
+    const pageDisplay = document.getElementById('page');
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+    const sidebar = document.getElementById('sidebar');
+    const chartContainer = document.getElementById('chartContainer');
+    const footer = document.querySelector('footer');
+
+    let page = 1;
+    let chartLoaded = false;
+
+    function toggleSidebar() {
+      sidebar.classList.toggle('open');
+    }
+
+    function showChart() {
+      chartContainer.style.display = 'block';
+      toggleSidebar();
+      footer.style.display = 'none';
+
+      if (!chartLoaded) {
+        chartLoaded = true;
+        new TradingView.widget({
+          "width": "100%",
+          "height": 500,
+          "symbol": "BINANCE:BTCUSDT",
+          "interval": "1",
+          "timezone": "Etc/UTC",
+          "theme": "light",
+          "style": "1",
+          "locale": "en",
+          "toolbar_bg": "#f1f3f6",
+          "enable_publishing": false,
+          "allow_symbol_change": true,
+          "container_id": "tradingview_chart"
+        });
+      }
+    }
+
+    function goHome() {
+      chartContainer.style.display = 'none';
+      footer.style.display = 'flex';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      fetchCoins();
+    }
+
+    async function fetchCoins() {
+      list.innerHTML = Array(20).fill('').map(() => `
+        <div class="skeleton">
+          <div class="skeleton-header">
+            <div class="skeleton-img"></div>
+            <div>
+              <div class="skeleton-line skeleton-title"></div>
+              <div class="skeleton-line skeleton-subtitle"></div>
+            </div>
+          </div>
+          <div class="skeleton-price">
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line"></div>
+          </div>
+          <div class="skeleton-meta">
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line"></div>
+          </div>
+        </div>
+      `).join('');
+
+      const res = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=${page}&sparkline=false`);
+      const data = await res.json();
+
+      list.innerHTML = data.map(coin => `
+        <div class="coin">
+          <div class="coin-header">
+            <img src="${coin.image}" alt="${coin.name}" />
+            <div>
+              <h2>${coin.name}</h2>
+              <span>${coin.symbol.toUpperCase()}</span>
+            </div>
+          </div>
+          <div class="coin-price">
+            <p>$${coin.current_price.toLocaleString()}</p>
+            <p class="${coin.price_change_percentage_24h >= 0 ? 'green' : 'red'}">
+              ${coin.price_change_percentage_24h.toFixed(2)}%
+            </p>
+          </div>
+          <div class="coin-detail">
+            <small>Market Cap: $${coin.market_cap.toLocaleString()}</small>
+            <small>Volume: $${coin.total_volume.toLocaleString()}</small>
+          </div>
+        </div>
+      `).join('');
+
+      pageDisplay.textContent = `Page ${page}`;
+      prevBtn.disabled = page === 1;
+    }
+
+    prevBtn.onclick = () => { if (page > 1) { page--; fetchCoins(); } };
+    nextBtn.onclick = () => { page++; fetchCoins(); };
+
+    fetchCoins();
+  </script>
+</body>
+</html>

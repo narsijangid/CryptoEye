@@ -16,6 +16,7 @@
       background: #f5f5f5;
       color: #222;
       overflow-x: hidden;
+      padding-bottom: 80px; /* Space for fixed footer */
     }
 
     header {
@@ -25,6 +26,9 @@
       justify-content: space-between;
       align-items: center;
       padding: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
     header h1 {
@@ -41,6 +45,7 @@
       display: flex;
       flex-direction: column;
       gap: 1rem;
+      min-height: calc(100vh - 160px); /* Ensure content area fills screen */
     }
 
     .coin {
@@ -134,9 +139,12 @@
       align-items: center;
       padding: 1rem;
       background: #fff;
-      position: sticky;
+      position: fixed;
       bottom: 0;
+      left: 0;
+      right: 0;
       border-top: 1px solid #ddd;
+      z-index: 50;
     }
 
     button {
@@ -202,9 +210,100 @@
     }
 
     #chartContainer {
-      max-width: 100%;
-      margin: 2rem auto;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: white;
+      z-index: 200;
       display: none;
+    }
+
+    #chartContainer .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background: #111;
+      color: white;
+    }
+
+    #chartContainer .chart-header h2 {
+      margin: 0;
+    }
+
+    #chartContainer .close-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+
+    #chartContainer .chart-content {
+      height: calc(100vh - 80px);
+      padding: 1rem;
+    }
+
+    /* Professional Chart Loading Animation */
+    .chart-loading {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.95);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 300;
+    }
+
+    .chart-loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #111;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1rem;
+    }
+
+    .chart-loading-text {
+      font-size: 18px;
+      font-weight: bold;
+      color: #111;
+      margin-bottom: 0.5rem;
+    }
+
+    .chart-loading-subtext {
+      font-size: 14px;
+      color: #666;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Professional dots loading animation */
+    .loading-dots {
+      display: inline-block;
+    }
+
+    .loading-dots::after {
+      content: '';
+      animation: dots 1.5s infinite;
+    }
+
+    @keyframes dots {
+      0%, 20% { content: ''; }
+      40% { content: '.'; }
+      60% { content: '..'; }
+      80%, 100% { content: '...'; }
     }
   </style>
 </head>
@@ -225,17 +324,25 @@
     </div>
     <div class="sidebar-links">
       <a href="https://cryptoeyeapp.blogspot.com/2025/07/privacy-policy.html">Privacy Policy</a>
-      <a href="https://cryptoeyeapp.blogspot.com/2025/07/terms-and-conditions.html">Terms and Conditions
-</a>
-  <a href="https://cryptoeyeapp.blogspot.com/2025/07/about-us.html">About Us
-</a>
+      <a href="https://cryptoeyeapp.blogspot.com/2025/07/terms-and-conditions.html">Terms and Conditions</a>
+      <a href="https://cryptoeyeapp.blogspot.com/2025/07/about-us.html">About Us</a>
     </div>
   </div>
 
   <!-- Chart Section -->
   <div id="chartContainer">
-    <div class="tradingview-widget-container">
+    <div class="chart-header">
+      <h2>Live Bitcoin Chart</h2>
+      <button class="close-btn" onclick="goHome()">&times;</button>
+    </div>
+    <div class="chart-content">
       <div id="tradingview_chart"></div>
+    </div>
+    <!-- Professional Loading Animation -->
+    <div id="chartLoading" class="chart-loading">
+      <div class="chart-loading-spinner"></div>
+      <div class="chart-loading-text">Loading Chart<span class="loading-dots"></span></div>
+      <div class="chart-loading-subtext">Please wait while we prepare your trading view</div>
     </div>
   </div>
 
@@ -257,7 +364,7 @@
     const nextBtn = document.getElementById('next');
     const sidebar = document.getElementById('sidebar');
     const chartContainer = document.getElementById('chartContainer');
-    const footer = document.querySelector('footer');
+    const chartLoading = document.getElementById('chartLoading');
 
     let page = 1;
     let chartLoaded = false;
@@ -268,31 +375,38 @@
 
     function showChart() {
       chartContainer.style.display = 'block';
+      chartLoading.style.display = 'flex';
       toggleSidebar();
-      footer.style.display = 'none';
 
       if (!chartLoaded) {
         chartLoaded = true;
-        new TradingView.widget({
-          "width": "100%",
-          "height": 500,
-          "symbol": "BINANCE:BTCUSDT",
-          "interval": "1",
-          "timezone": "Etc/UTC",
-          "theme": "light",
-          "style": "1",
-          "locale": "en",
-          "toolbar_bg": "#f1f3f6",
-          "enable_publishing": false,
-          "allow_symbol_change": true,
-          "container_id": "tradingview_chart"
-        });
+        // Show loading for exactly 3 seconds
+        setTimeout(() => {
+          new TradingView.widget({
+            "width": "100%",
+            "height": "100%",
+            "symbol": "BINANCE:BTCUSDT",
+            "interval": "1",
+            "timezone": "Etc/UTC",
+            "theme": "light",
+            "style": "1",
+            "locale": "en",
+            "toolbar_bg": "#f1f3f6",
+            "enable_publishing": false,
+            "allow_symbol_change": true,
+            "container_id": "tradingview_chart"
+          });
+        }, 1000);
       }
+
+      // Hide loading after exactly 3 seconds
+      setTimeout(() => {
+        chartLoading.style.display = 'none';
+      }, 3000);
     }
 
     function goHome() {
       chartContainer.style.display = 'none';
-      footer.style.display = 'flex';
       window.scrollTo({ top: 0, behavior: 'smooth' });
       fetchCoins();
     }
@@ -318,30 +432,118 @@
         </div>
       `).join('');
 
-      const res = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=${page}&sparkline=false`);
-      const data = await res.json();
+      try {
+        // Try CoinGecko API first (free tier)
+        let data;
+        const res = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=${page}&sparkline=false`);
+        
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
+        
+        data = await res.json();
 
-      list.innerHTML = data.map(coin => `
-        <div class="coin">
-          <div class="coin-header">
-            <img src="${coin.image}" alt="${coin.name}" />
-            <div>
-              <h2>${coin.name}</h2>
-              <span>${coin.symbol.toUpperCase()}</span>
+        if (!data || data.length === 0) {
+          throw new Error('No data received from API');
+        }
+
+        list.innerHTML = data.map(coin => `
+          <div class="coin">
+            <div class="coin-header">
+              <img src="${coin.image}" alt="${coin.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNmMGYwZjAiLz4KPHN2ZyB4PSI4IiB5PSI4IiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMCA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDQgOUwxMC45MSA4LjI2TDEyIDJaIiBmaWxsPSIjOTk5Ii8+Cjwvc3ZnPgo8L3N2Zz4K'" />
+              <div>
+                <h2>${coin.name}</h2>
+                <span>${coin.symbol.toUpperCase()}</span>
+              </div>
+            </div>
+            <div class="coin-price">
+              <p>$${coin.current_price ? coin.current_price.toLocaleString() : 'N/A'}</p>
+              <p class="${coin.price_change_percentage_24h >= 0 ? 'green' : 'red'}">
+                ${coin.price_change_percentage_24h ? coin.price_change_percentage_24h.toFixed(2) : '0.00'}%
+              </p>
+            </div>
+            <div class="coin-detail">
+              <small>Market Cap: $${coin.market_cap ? coin.market_cap.toLocaleString() : 'N/A'}</small>
+              <small>Volume: $${coin.total_volume ? coin.total_volume.toLocaleString() : 'N/A'}</small>
             </div>
           </div>
-          <div class="coin-price">
-            <p>$${coin.current_price.toLocaleString()}</p>
-            <p class="${coin.price_change_percentage_24h >= 0 ? 'green' : 'red'}">
-              ${coin.price_change_percentage_24h.toFixed(2)}%
-            </p>
-          </div>
-          <div class="coin-detail">
-            <small>Market Cap: $${coin.market_cap.toLocaleString()}</small>
-            <small>Volume: $${coin.total_volume.toLocaleString()}</small>
-          </div>
-        </div>
-      `).join('');
+        `).join('');
+
+      } catch (error) {
+        console.error('CoinGecko API Error:', error);
+        
+        // Try CoinCap as fallback
+        try {
+          const coinCapRes = await fetch(`https://api.coincap.io/v2/assets?limit=20&offset=${(page - 1) * 20}`);
+          
+          if (!coinCapRes.ok) {
+            throw new Error(`CoinCap HTTP ${coinCapRes.status}: ${coinCapRes.statusText}`);
+          }
+          
+          const coinCapData = await coinCapRes.json();
+          
+          if (!coinCapData.data || coinCapData.data.length === 0) {
+            throw new Error('No data received from CoinCap API');
+          }
+          
+          // Transform CoinCap data to match our format
+          const data = coinCapData.data.map(coin => ({
+            id: coin.id,
+            name: coin.name,
+            symbol: coin.symbol,
+            image: `https://assets.coincap.io/assets/icons/${coin.symbol.toLowerCase()}@2x.png`,
+            current_price: parseFloat(coin.priceUsd),
+            market_cap: parseFloat(coin.marketCapUsd),
+            total_volume: parseFloat(coin.volumeUsd24Hr),
+            price_change_percentage_24h: parseFloat(coin.changePercent24Hr)
+          }));
+
+          list.innerHTML = data.map(coin => `
+            <div class="coin">
+              <div class="coin-header">
+                <img src="${coin.image}" alt="${coin.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNmMGYwZjAiLz4KPHN2ZyB4PSI4IiB5PSI4IiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMCA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDQgOUwxMC45MSA4LjI2TDEyIDJaIiBmaWxsPSIjOTk5Ii8+Cjwvc3ZnPgo8L3N2Zz4K'" />
+                <div>
+                  <h2>${coin.name}</h2>
+                  <span>${coin.symbol.toUpperCase()}</span>
+                </div>
+              </div>
+              <div class="coin-price">
+                <p>$${coin.current_price ? coin.current_price.toLocaleString() : 'N/A'}</p>
+                <p class="${coin.price_change_percentage_24h >= 0 ? 'green' : 'red'}">
+                  ${coin.price_change_percentage_24h ? coin.price_change_percentage_24h.toFixed(2) : '0.00'}%
+                </p>
+              </div>
+              <div class="coin-detail">
+                <small>Market Cap: $${coin.market_cap ? coin.market_cap.toLocaleString() : 'N/A'}</small>
+                <small>Volume: $${coin.total_volume ? coin.total_volume.toLocaleString() : 'N/A'}</small>
+              </div>
+            </div>
+          `).join('');
+          
+        } catch (fallbackError) {
+          console.error('Fallback API Error:', fallbackError);
+          
+          // Show more specific error message
+          let errorMessage = 'Unable to load crypto data.';
+          if (error.message.includes('429')) {
+            errorMessage = 'API rate limit exceeded. Please try again in a few minutes.';
+          } else if (error.message.includes('404')) {
+            errorMessage = 'API endpoint not found.';
+          } else if (error.message.includes('500')) {
+            errorMessage = 'Server error. Please try again later.';
+          }
+          
+          list.innerHTML = `
+            <div class="coin" style="text-align: center; padding: 2rem;">
+              <h3 style="color: #ff6b6b; margin-bottom: 1rem;">⚠️ ${errorMessage}</h3>
+              <p style="margin-bottom: 1rem; color: #666;">Error: ${error.message}</p>
+              <button onclick="fetchCoins()" style="background: #111; color: white; padding: 0.5rem 1rem; border: none; border-radius: 5px; cursor: pointer;">
+                🔄 Retry
+              </button>
+            </div>
+          `;
+        }
+      }
 
       pageDisplay.textContent = `Page ${page}`;
       prevBtn.disabled = page === 1;
@@ -350,6 +552,7 @@
     prevBtn.onclick = () => { if (page > 1) { page--; fetchCoins(); } };
     nextBtn.onclick = () => { page++; fetchCoins(); };
 
+    // Initialize the app
     fetchCoins();
   </script>
 </body>

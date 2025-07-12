@@ -53,6 +53,13 @@
       padding: 1rem;
       border-radius: 10px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .coin:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
     .skeleton {
@@ -449,7 +456,7 @@
         }
 
         list.innerHTML = data.map(coin => `
-          <div class="coin">
+          <div class="coin" onclick="redirectToStockFixed('${coin.id}', '${coin.name}', '${coin.symbol}', '${coin.image}', '${coin.current_price}', '${coin.price_change_percentage_24h}')">
             <div class="coin-header">
               <img src="${coin.image}" alt="${coin.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNmMGYwZjAiLz4KPHN2ZyB4PSI4IiB5PSI4IiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMCA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDQgOUwxMC45MSA4LjI2TDEyIDJaIiBmaWxsPSIjOTk5Ii8+Cjwvc3ZnPgo8L3N2Zz4K'" />
               <div>
@@ -500,7 +507,7 @@
           }));
 
           list.innerHTML = data.map(coin => `
-            <div class="coin">
+            <div class="coin" onclick="redirectToStockFixed('${coin.id}', '${coin.name}', '${coin.symbol}', '${coin.image}', '${coin.current_price}', '${coin.price_change_percentage_24h}')">
               <div class="coin-header">
                 <img src="${coin.image}" alt="${coin.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNmMGYwZjAiLz4KPHN2ZyB4PSI4IiB5PSI4IiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMCA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDQgOUwxMC45MSA4LjI2TDEyIDJaIiBmaWxsPSIjOTk5Ii8+Cjwvc3ZnPgo8L3N2Zz4K'" />
                 <div>
@@ -548,6 +555,11 @@
 
       pageDisplay.textContent = `Page ${page}`;
       prevBtn.disabled = page === 1;
+    }
+
+    function redirectToStockFixed(id, name, symbol, image, currentPrice, priceChange) {
+      const url = `stock_fixed.html?id=${id}&name=${name}&symbol=${symbol}&image=${image}&currentPrice=${currentPrice}&priceChange=${priceChange}`;
+      window.location.href = url;
     }
 
     prevBtn.onclick = () => { if (page > 1) { page--; fetchCoins(); } };

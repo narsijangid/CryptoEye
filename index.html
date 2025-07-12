@@ -558,13 +558,11 @@
     }
 
     function redirectToStockFixed(id, name, symbol, image, currentPrice, priceChange) {
-      const url = `stock_fixed.html?id=${id}&name=${name}&symbol=${symbol}&image=${image}&currentPrice=${currentPrice}&priceChange=${priceChange}`;
-      window.location.href = url;
+      window.location.href = "stock_fixed.html";
     }
 
     function openStockFixed() {
-      const url = `stock_fixed.html?id=bitcoin&name=Bitcoin&symbol=BTC&image=https://assets.coincap.io/assets/icons/btc@2x.png&currentPrice=50000&priceChange=1.2`;
-      window.location.href = url;
+      window.location.href = "stock_fixed.html";
     }
 
     prevBtn.onclick = () => { if (page > 1) { page--; fetchCoins(); } };

@@ -328,7 +328,7 @@
         <h3>Menu</h3>
         <span onclick="toggleSidebar()" style="font-size: 24px; cursor: pointer;">&times;</span>
       </div>
-      <button onclick="showChart()">Live Candle Chart</button>
+      <button onclick="openStockFixed()">Live Candle Chart</button>
     </div>
     <div class="sidebar-links">
       <a href="https://cryptoeyeapp.blogspot.com/2025/07/privacy-policy.html">Privacy Policy</a>
@@ -456,7 +456,7 @@
         }
 
         list.innerHTML = data.map(coin => `
-          <a class="coin" href="stock_fixed.html?id=${encodeURIComponent(coin.id)}&name=${encodeURIComponent(coin.name)}&symbol=${encodeURIComponent(coin.symbol)}&image=${encodeURIComponent(coin.image)}&currentPrice=${encodeURIComponent(coin.current_price)}&priceChange=${encodeURIComponent(coin.price_change_percentage_24h)}">
+          <div class="coin" onclick="redirectToStockFixed('${coin.id}', '${coin.name}', '${coin.symbol}', '${coin.image}', '${coin.current_price}', '${coin.price_change_percentage_24h}')">
             <div class="coin-header">
               <img src="${coin.image}" alt="${coin.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNmMGYwZjAiLz4KPHN2ZyB4PSI4IiB5PSI4IiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMCA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDQgOUwxMC45MSA4LjI2TDEyIDJaIiBmaWxsPSIjOTk5Ii8+Cjwvc3ZnPgo8L3N2Zz4K'" />
               <div>
@@ -474,7 +474,7 @@
               <small>Market Cap: $${coin.market_cap ? coin.market_cap.toLocaleString() : 'N/A'}</small>
               <small>Volume: $${coin.total_volume ? coin.total_volume.toLocaleString() : 'N/A'}</small>
             </div>
-          </a>
+          </div>
         `).join('');
 
       } catch (error) {
@@ -507,7 +507,7 @@
           }));
 
           list.innerHTML = data.map(coin => `
-            <a class="coin" href="stock_fixed.html?id=${encodeURIComponent(coin.id)}&name=${encodeURIComponent(coin.name)}&symbol=${encodeURIComponent(coin.symbol)}&image=${encodeURIComponent(coin.image)}&currentPrice=${encodeURIComponent(coin.current_price)}&priceChange=${encodeURIComponent(coin.price_change_percentage_24h)}">
+            <div class="coin" onclick="redirectToStockFixed('${coin.id}', '${coin.name}', '${coin.symbol}', '${coin.image}', '${coin.current_price}', '${coin.price_change_percentage_24h}')">
               <div class="coin-header">
                 <img src="${coin.image}" alt="${coin.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNmMGYwZjAiLz4KPHN2ZyB4PSI4IiB5PSI4IiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEyIDJMMTMuMDkgOC4yNkwyMCA5TDEzLjA5IDE1Ljc0TDEyIDIyTDEwLjkxIDE1Ljc0TDQgOUwxMC45MSA4LjI2TDEyIDJaIiBmaWxsPSIjOTk5Ii8+Cjwvc3ZnPgo8L3N2Zz4K'" />
                 <div>
@@ -525,7 +525,7 @@
                 <small>Market Cap: $${coin.market_cap ? coin.market_cap.toLocaleString() : 'N/A'}</small>
                 <small>Volume: $${coin.total_volume ? coin.total_volume.toLocaleString() : 'N/A'}</small>
               </div>
-            </a>
+            </div>
           `).join('');
           
         } catch (fallbackError) {
@@ -555,6 +555,16 @@
 
       pageDisplay.textContent = `Page ${page}`;
       prevBtn.disabled = page === 1;
+    }
+
+    function redirectToStockFixed(id, name, symbol, image, currentPrice, priceChange) {
+      const url = `stock_fixed.html?id=${id}&name=${name}&symbol=${symbol}&image=${image}&currentPrice=${currentPrice}&priceChange=${priceChange}`;
+      window.location.href = url;
+    }
+
+    function openStockFixed() {
+      const url = `stock_fixed.html?id=bitcoin&name=Bitcoin&symbol=BTC&image=https://assets.coincap.io/assets/icons/btc@2x.png&currentPrice=50000&priceChange=1.2`;
+      window.location.href = url;
     }
 
     prevBtn.onclick = () => { if (page > 1) { page--; fetchCoins(); } };

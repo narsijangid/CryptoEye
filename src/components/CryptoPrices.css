@@ -1,0 +1,327 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  body {
+    background: #f5f5f5;
+    color: #222;
+    overflow-x: hidden;
+    padding-bottom: 80px; /* Space for fixed footer */
+  }
+  
+  .app {
+    position: relative;
+  }
+  
+  header {
+    background: #111;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  
+  header h1 {
+    cursor: pointer;
+  }
+  
+  .menu-btn {
+    font-size: 24px;
+    cursor: pointer;
+  }
+  
+  .coin-list {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-height: calc(100vh - 160px); /* Ensure content area fills screen */
+  }
+  
+  .coin {
+    background: #fff;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .coin:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  
+  .skeleton {
+    padding: 1rem;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+  
+  .skeleton-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .skeleton-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(90deg, #eeeeee 25%, #dddddd 50%, #eeeeee 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite linear;
+  }
+  
+  .skeleton-line {
+    height: 14px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #eeeeee 25%, #dddddd 50%, #eeeeee 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite linear;
+  }
+  
+  .skeleton-title { width: 120px; }
+  .skeleton-subtitle { width: 80px; margin-top: 5px; }
+  
+  .skeleton-price, .skeleton-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+  
+  .skeleton-price .skeleton-line, .skeleton-meta .skeleton-line {
+    width: 45%;
+  }
+  
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  
+  .coin-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .coin-header img {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .coin-price {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    font-weight: bold;
+  }
+  
+  .coin-detail {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: #666;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .green { color: green; }
+  .red { color: red; }
+  
+  footer {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 1rem;
+    background: #fff;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-top: 1px solid #ddd;
+    z-index: 50;
+  }
+  
+  button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    background: #111;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  button:disabled {
+    background: #aaa;
+    cursor: not-allowed;
+  }
+  
+  @media (min-width: 600px) {
+    .coin-list { max-width: 500px; margin: auto; }
+  }
+  
+  .sidebar {
+    position: fixed;
+    right: -300px;
+    top: 0;
+    width: 300px;
+    height: 100%;
+    background: #fff;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+    transition: right 0.3s ease;
+    z-index: 1000;
+    padding: 1rem;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .sidebar.open {
+    right: 0;
+  }
+  
+  .sidebar button {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+  
+  .sidebar-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .sidebar-links a {
+    text-align: center;
+    color: #111;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 0.5rem;
+    background: #f0f0f0;
+    border-radius: 5px;
+  }
+  
+  .sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .sidebar-header h3 {
+    margin: 0;
+  }
+  
+  .sidebar-header span {
+    font-size: 24px;
+    cursor: pointer;
+  }
+  
+  .chart-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: white;
+    z-index: 200;
+  }
+  
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #111;
+    color: white;
+  }
+  
+  .chart-header h2 {
+    margin: 0;
+  }
+  
+  .close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0.5rem;
+  }
+  
+  .chart-content {
+    height: calc(100vh - 80px);
+    padding: 0;
+    margin: 0;
+  }
+  
+  /* Professional Chart Loading Animation */
+  .chart-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 300;
+  }
+  
+  .chart-loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #111;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+  }
+  
+  .chart-loading-text {
+    font-size: 18px;
+    font-weight: bold;
+    color: #111;
+    margin-bottom: 0.5rem;
+  }
+  
+  .chart-loading-subtext {
+    font-size: 14px;
+    color: #666;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Professional dots loading animation */
+  .loading-dots {
+    display: inline-block;
+  }
+  
+  .loading-dots::after {
+    content: '';
+    animation: dots 1.5s infinite;
+  }
+  
+  @keyframes dots {
+    0%, 20% { content: ''; }
+    40% { content: '.'; }
+    60% { content: '..'; }
+    80%, 100% { content: '...'; }
+  }
